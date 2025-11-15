@@ -1,9 +1,10 @@
-// Backend base URL
-const BASE = "https://aqms-backend-ki10.onrender.com/api/queries";
+// Backend base URLs
+const BASE_QUERIES = "https://aqms-backend-ki10.onrender.com/api/queries";
+const BASE_ANALYTICS = "https://aqms-backend-ki10.onrender.com/api/analytics";
 
-// Universal request function
-async function request(path = "", opts = {}) {
-  const url = `${BASE}${path}`;
+// Universal request helper
+async function request(base, path = "", opts = {}) {
+  const url = `${base}${path}`;
 
   const res = await fetch(url, {
     headers: { "Content-Type": "application/json" },
@@ -27,7 +28,7 @@ async function request(path = "", opts = {}) {
   return data;
 }
 
-// Build query parameters for filters
+// Build query params
 function buildQueryPath(basePath = "", params = {}) {
   const qs = new URLSearchParams();
 
@@ -41,20 +42,24 @@ function buildQueryPath(basePath = "", params = {}) {
   return basePath + (q ? `?${q}` : "");
 }
 
+// ===============================
+// Query APIs
+// ===============================
+
 // GET /api/queries
 export async function fetchQueries(params = {}) {
   const path = buildQueryPath("", params);
-  return request(path);
+  return request(BASE_QUERIES, path);
 }
 
 // GET /api/queries/:id
 export async function fetchQuery(id) {
-  return request(`/${id}`);
+  return request(BASE_QUERIES, `/${id}`);
 }
 
 // POST /api/queries/submit
 export async function createQuery(body) {
-  return request("/submit", {
+  return request(BASE_QUERIES, "/submit", {
     method: "POST",
     body: JSON.stringify(body),
   });
@@ -62,7 +67,7 @@ export async function createQuery(body) {
 
 // PUT /api/queries/:id/status
 export async function updateQueryStatus(id, body) {
-  return request(`/${id}/status`, {
+  return request(BASE_QUERIES, `/${id}/status`, {
     method: "PUT",
     body: JSON.stringify(body),
   });
@@ -70,13 +75,17 @@ export async function updateQueryStatus(id, body) {
 
 // DELETE /api/queries/:id
 export async function deleteQuery(id) {
-  return request(`/${id}`, {
+  return request(BASE_QUERIES, `/${id}`, {
     method: "DELETE",
   });
 }
 
-// GET /api/queries/analytics/summary
+// ===============================
+// Analytics APIs
+// ===============================
+
+// GET /api/analytics/summary
 export async function analyticsSummary(params = {}) {
-  const path = buildQueryPath("/analytics/summary", params);
-  return request(path);
+  const path = buildQueryPath("/summary", params);
+  return request(BASE_ANALYTICS, path);
 }
