@@ -93,14 +93,15 @@ async function deleteQuery(req, res) {
   }
 }
 
-// ✅ NEW — ANALYTICS SUMMARY
+// ✅ FIXED — ANALYTICS SUMMARY (matching your model)
 async function getAnalyticsSummary(req, res) {
   try {
     const total = await Query.countDocuments();
-    const pending = await Query.countDocuments({ status: "Pending" });
-    const resolved = await Query.countDocuments({ status: "Resolved" });
+    const pending = await Query.countDocuments({ status: "open" });
+    const inProgress = await Query.countDocuments({ status: "in_progress" });
+    const resolved = await Query.countDocuments({ status: "resolved" });
 
-    res.json({ total, pending, resolved });
+    res.json({ total, pending, inProgress, resolved });
   } catch (err) {
     res.status(500).json({ error: "Error generating summary" });
   }
