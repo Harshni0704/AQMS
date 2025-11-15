@@ -1,82 +1,82 @@
-// Use Render backend in production
-const BASE = import.meta.env.VITE_API_BASE || 'https://aqms-backend-ki10.onrender.com/api/queries'
+// Backend base URL
+const BASE = "https://aqms-backend-ki10.onrender.com/api/queries";
 
-// Main request function
-async function request(path = '', opts = {}) {
-  const url = path.startsWith('http') ? path : BASE + path
+// Universal request function
+async function request(path = "", opts = {}) {
+  const url = `${BASE}${path}`;
 
   const res = await fetch(url, {
-    headers: { 'Content-Type': 'application/json' },
-    ...opts
-  })
+    headers: { "Content-Type": "application/json" },
+    ...opts,
+  });
 
-  const text = await res.text().catch(() => '')
-  let data = null
+  const text = await res.text().catch(() => "");
+  let data = null;
 
-  try { 
-    data = text ? JSON.parse(text) : null 
-  } catch (e) { 
-    data = text 
+  try {
+    data = text ? JSON.parse(text) : null;
+  } catch (e) {
+    data = text;
   }
 
   if (!res.ok) {
-    const err = (data && data.error) ? data.error : res.statusText || 'API error'
-    throw new Error(err)
+    const err = data?.error || res.statusText || "API error";
+    throw new Error(err);
   }
 
-  return data
+  return data;
 }
 
-// Build query params
-function buildQueryPath(basePath = '', params = {}) {
-  const qs = new URLSearchParams()
+// Build query parameters for filters
+function buildQueryPath(basePath = "", params = {}) {
+  const qs = new URLSearchParams();
 
   Object.entries(params).forEach(([key, value]) => {
-    if (value !== undefined && value !== null && value !== '') {
-      qs.set(key, value)
+    if (value !== undefined && value !== null && value !== "") {
+      qs.set(key, value);
     }
-  })
+  });
 
-  const q = qs.toString()
-  return basePath + (q ? `?${q}` : '')
+  const q = qs.toString();
+  return basePath + (q ? `?${q}` : "");
 }
 
-// Fetch all queries
+// GET /api/queries
 export async function fetchQueries(params = {}) {
-  const path = buildQueryPath('/', params)
-  return request(path)
+  const path = buildQueryPath("", params);
+  return request(path);
 }
 
-// Fetch single query
+// GET /api/queries/:id
 export async function fetchQuery(id) {
-  return request('/' + id)
+  return request(`/${id}`);
 }
 
-// Create a query (POST)
+// POST /api/queries/submit
 export async function createQuery(body) {
-  return request('/submit', {
-    method: 'POST',
-    body: JSON.stringify(body)
-  })
+  return request("/submit", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
 }
 
-// Update query status
+// PUT /api/queries/:id/status
 export async function updateQueryStatus(id, body) {
-  return request('/' + id + '/status', {
-    method: 'PUT',
-    body: JSON.stringify(body)
-  })
+  return request(`/${id}/status`, {
+    method: "PUT",
+    body: JSON.stringify(body),
+  });
 }
 
-// Delete a query
+// DELETE /api/queries/:id
 export async function deleteQuery(id) {
-  return request('/' + id, {
-    method: 'DELETE'
-  })
+  return request(`/${id}`, {
+    method: "DELETE",
+  });
 }
 
-// Analytics summary GET
+// GET /api/queries/analytics/summary
 export async function analyticsSummary(params = {}) {
-  const path = buildQueryPath('/analytics/summary', params)
-  return request(path)
+  const path = buildQueryPath("/analytics/summary", params);
+  return request(path);
 }
