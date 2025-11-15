@@ -1,14 +1,23 @@
 const express = require("express");
 const router = express.Router();
-
 const ctrl = require("../controllers/queryController");
 
-// ALL ROUTES MUST POINT TO VALID FUNCTIONS
+// ✅ Analytics Summary Route (must be BEFORE :id route)
+router.get("/analytics/summary", ctrl.getAnalyticsSummary);
 
-router.get("/", ctrl.getQueries);            // list
-router.post("/submit", ctrl.submitQuery);    // create
-router.get("/:id", ctrl.getQueryById);       // get one
-router.put("/:id/status", ctrl.updateQueryStatus); // update only status
-router.delete("/:id", ctrl.deleteQuery);     // delete
+// Get all queries
+router.get("/", ctrl.getQueries);
+
+// Create new query
+router.post("/", ctrl.submitQuery);
+
+// Get by ID
+router.get("/:id", ctrl.getQueryById);
+
+// Update status
+router.patch("/:id/status", ctrl.updateQueryStatus);
+
+// Delete query
+router.delete("/:id", ctrl.deleteQuery);
 
 module.exports = router;

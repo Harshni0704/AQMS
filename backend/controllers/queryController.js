@@ -1,4 +1,4 @@
-const Query = require("../models/Query"); // ✅ MUST MATCH your file name
+const Query = require("../models/Query");
 const { parsePagination } = require("../utils/pagination");
 
 // GET ALL QUERIES (with search)
@@ -93,10 +93,24 @@ async function deleteQuery(req, res) {
   }
 }
 
+// ✅ NEW — ANALYTICS SUMMARY
+async function getAnalyticsSummary(req, res) {
+  try {
+    const total = await Query.countDocuments();
+    const pending = await Query.countDocuments({ status: "Pending" });
+    const resolved = await Query.countDocuments({ status: "Resolved" });
+
+    res.json({ total, pending, resolved });
+  } catch (err) {
+    res.status(500).json({ error: "Error generating summary" });
+  }
+}
+
 module.exports = {
   submitQuery,
   getQueries,
   getQueryById,
   updateQueryStatus,
-  deleteQuery
+  deleteQuery,
+  getAnalyticsSummary
 };
