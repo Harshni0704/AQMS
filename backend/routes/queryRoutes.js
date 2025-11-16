@@ -2,18 +2,42 @@ const express = require("express");
 const router = express.Router();
 const ctrl = require("../controllers/queryController");
 
-// ===== ANALYTICS (Keep this ABOVE :id routes) =====
+// ===============================
+// ANALYTICS
+// ===============================
 router.get("/analytics/summary", ctrl.getAnalyticsSummary);
 
-// ===== MAIN ROUTES =====
-router.get("/", ctrl.getQueries);           // Get all queries
-router.post("/", ctrl.submitQuery);         // Create new query
+// ===============================
+// MAIN ROUTES
+// ===============================
+router.get("/", ctrl.getQueries);
+router.post("/", ctrl.submitQuery);
 
-router.get("/:id", ctrl.getQueryById);      // Get by ID
-router.patch("/:id/status", ctrl.updateQueryStatus);   // Update status
+// ===============================
+// GET BY ID
+// ===============================
+router.get("/:id", ctrl.getQueryById);
 
-router.patch("/:id/assign", ctrl.assignQuery);   // Assign user
+// ===============================
+// UPDATE FULL QUERY (EDIT)
+// ===============================
+router.put("/:id", ctrl.updateQuery);
 
-router.delete("/:id", ctrl.deleteQuery);    // Delete
+// ===============================
+// UPDATE STATUS
+// ===============================
+router.put("/:id/status", ctrl.updateQueryStatus);
+router.patch("/:id/status", ctrl.updateQueryStatus);
+
+// ===============================
+// ASSIGN USER
+// ===============================
+router.put("/:id/assign", ctrl.assignQuery);
+router.patch("/:id/assign", ctrl.assignQuery);
+
+// ===============================
+// DELETE
+// ===============================
+router.delete("/:id", ctrl.deleteQuery);
 
 module.exports = router;

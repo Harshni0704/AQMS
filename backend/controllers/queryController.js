@@ -2,7 +2,7 @@ const Query = require("../models/Query");
 const { parsePagination } = require("../utils/pagination");
 
 // =======================================================
-// GET ALL QUERIES (search + filter + pagination + sorting)
+// GET ALL QUERIES
 // =======================================================
 async function getQueries(req, res) {
   try {
@@ -24,7 +24,6 @@ async function getQueries(req, res) {
         { message: { $regex: search, $options: "i" } },
       ];
 
-      // If ObjectId → search by ID
       if (search.length === 24) {
         filter.$or.push({ _id: search });
       }
@@ -32,24 +31,23 @@ async function getQueries(req, res) {
 
     let cursor = Query.find(filter).skip(skip).limit(limit);
 
-    // Sorting
     cursor =
       sortBy === "priority"
         ? cursor.sort({ priority: -1 })
         : cursor.sort({ createdAt: -1 });
 
-    const items = await cursor.exec();
+    const items = await cursor;
     const total = await Query.countDocuments(filter);
 
-    return res.json({ page, limit, total, items });
+    res.json({ page, limit, total, items });
   } catch (err) {
-    console.error("getQueries error", err);
-    return res.status(500).json({ error: "Server error" });
+    console.error("getQueries error:", err);
+    res.status(500).json({ error: "Server error" });
   }
 }
 
 // =======================================================
-// GET BY ID
+// GET QUERY BY ID
 // =======================================================
 async function getQueryById(req, res) {
   try {
@@ -74,7 +72,24 @@ async function submitQuery(req, res) {
 }
 
 // =======================================================
-// UPDATE STATUS
+// UPDATE FULL QUERY (EDIT POPUP SAVE BUTTON)
+// =======================================================
+async function updateQuery(req, res) {
+  try {
+    const updated = await Query.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
+
+    if (!updated) return res.status(404).json({ error: "Not found" });
+
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ error: "Error updating query" });
+  }
+}
+
+// =======================================================
+// UPDATE STATUS ONLY
 // =======================================================
 async function updateQueryStatus(req, res) {
   try {
@@ -85,9 +100,10 @@ async function updateQueryStatus(req, res) {
     );
 
     if (!updated) return res.status(404).json({ error: "Not found" });
+
     res.json(updated);
   } catch (err) {
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({ error: "Error updating status" });
   }
 }
 
@@ -96,15 +112,14 @@ async function updateQueryStatus(req, res) {
 // =======================================================
 async function assignQuery(req, res) {
   try {
-    const { assignedTo } = req.body;
-
     const updated = await Query.findByIdAndUpdate(
       req.params.id,
-      { assignedTo },
+      { assignedTo: req.body.assignedTo },
       { new: true }
     );
 
     if (!updated) return res.status(404).json({ error: "Not found" });
+
     res.json(updated);
   } catch (err) {
     res.status(500).json({ error: "Error assigning query" });
@@ -117,6 +132,7 @@ async function assignQuery(req, res) {
 async function deleteQuery(req, res) {
   try {
     const deleted = await Query.findByIdAndDelete(req.params.id);
+
     if (!deleted) return res.status(404).json({ error: "Not found" });
 
     res.json({ success: true });
@@ -145,6 +161,7 @@ module.exports = {
   submitQuery,
   getQueries,
   getQueryById,
+  updateQuery,
   updateQueryStatus,
   assignQuery,
   deleteQuery,
