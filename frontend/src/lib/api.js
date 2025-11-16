@@ -1,8 +1,8 @@
-// Backend base URLs
+// ================= BASE URLS =================
 const BASE_QUERIES = `${import.meta.env.VITE_API_URL}/api/queries`;
 const BASE_ANALYTICS = `${import.meta.env.VITE_API_URL}/api/analytics`;
 
-// Universal request helper
+// ================= UNIVERSAL REQUEST HELPER =================
 async function request(base, path = "", opts = {}) {
   const url = `${base}${path}`;
 
@@ -28,7 +28,7 @@ async function request(base, path = "", opts = {}) {
   return data;
 }
 
-// ============= QUERIES =============
+// ================= QUERIES API =================
 
 // GET /api/queries
 export async function fetchQueries(params = {}) {
@@ -49,7 +49,7 @@ export async function createQuery(body) {
   });
 }
 
-// PUT /api/queries/:id  (Full update)
+// PUT /api/queries/:id
 export async function updateQuery(id, body) {
   return request(BASE_QUERIES, `/${id}`, {
     method: "PUT",
@@ -78,4 +78,11 @@ export async function deleteQuery(id) {
   return request(BASE_QUERIES, `/${id}`, {
     method: "DELETE",
   });
+}
+
+// ================= ANALYTICS API =================
+
+// GET /api/analytics/summary
+export async function analyticsSummary() {
+  return request(BASE_ANALYTICS, "/summary");
 }
