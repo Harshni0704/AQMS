@@ -9,26 +9,24 @@ const app = express();
 // ================= MIDDLEWARE =================
 app.use(express.json());
 
-// ======= FIXED CORS (Works for Vercel + Render + Localhost) =======
+// ======= CORS (Render + Vercel + Localhost) =======
 const allowedOrigins = [
-  "https://aqms-nu.vercel.app",                               // Your main frontend domain
-  "https://aqms-my3ztswho-harshnis-projects.vercel.app",      // Your preview URL
-  "http://localhost:5173"                                      // For local development
+  "https://aqms-698hn9p2m-harshnis-projects.vercel.app",  // Your frontend URL
+  "https://aqms-nu.vercel.app",                          // Optional main domain
+  "http://localhost:5173"                                // Dev mode
 ];
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow mobile/desktop apps or tools with no origin
       if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        console.log("❌ CORS Blocked Origin:", origin);
-        callback(new Error("CORS blocked: " + origin));
+        return callback(null, true);
       }
+      console.log("❌ CORS Blocked:", origin);
+      return callback(new Error("CORS Not Allowed: " + origin));
     },
-    methods: "GET,POST,PUT,DELETE,OPTIONS",
-    allowedHeaders: "Content-Type, Authorization",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
@@ -43,9 +41,14 @@ import analyticsRoutes from "./routes/analyticsRoutes.js";
 app.use("/api/queries", queryRoutes);
 app.use("/api/analytics", analyticsRoutes);
 
+// ================= ROOT CHECK =================
+app.get("/", (req, res) => {
+  res.send("✅ AQMS Backend is Running Successfully");
+});
+
 // ================= START SERVER =================
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 10000;   // Render prefers dynamic + fallback
 
 connectDB().then(() => {
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+  app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
 });
