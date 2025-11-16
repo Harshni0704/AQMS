@@ -2,22 +2,18 @@ const express = require("express");
 const router = express.Router();
 const ctrl = require("../controllers/queryController");
 
-// ✅ Analytics Summary Route (must be BEFORE :id route)
+// ===== ANALYTICS (Keep this ABOVE :id routes) =====
 router.get("/analytics/summary", ctrl.getAnalyticsSummary);
 
-// Get all queries
-router.get("/", ctrl.getQueries);
+// ===== MAIN ROUTES =====
+router.get("/", ctrl.getQueries);           // Get all queries
+router.post("/", ctrl.submitQuery);         // Create new query
 
-// Create new query
-router.post("/", ctrl.submitQuery);
+router.get("/:id", ctrl.getQueryById);      // Get by ID
+router.patch("/:id/status", ctrl.updateQueryStatus);   // Update status
 
-// Get by ID
-router.get("/:id", ctrl.getQueryById);
+router.patch("/:id/assign", ctrl.assignQuery);   // Assign user
 
-// Update status
-router.patch("/:id/status", ctrl.updateQueryStatus);
-
-// Delete query
-router.delete("/:id", ctrl.deleteQuery);
+router.delete("/:id", ctrl.deleteQuery);    // Delete
 
 module.exports = router;
