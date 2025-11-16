@@ -1,6 +1,6 @@
 // Backend base URLs
-const BASE_QUERIES = "https://aqms-backend-ki10.onrender.com/api/queries";
-const BASE_ANALYTICS = "https://aqms-backend-ki10.onrender.com/api/analytics";
+const BASE_QUERIES = `${import.meta.env.VITE_API_URL}/queries`;
+const BASE_ANALYTICS = `${import.meta.env.VITE_API_URL}/analytics`;
 
 // Universal request helper
 async function request(base, path = "", opts = {}) {
@@ -17,7 +17,7 @@ async function request(base, path = "", opts = {}) {
   try {
     data = text ? JSON.parse(text) : null;
   } catch (e) {
-    data = text; // fallback for non-JSON responses
+    data = text;
   }
 
   if (!res.ok) {
@@ -33,7 +33,7 @@ function buildQueryPath(basePath = "", params = {}) {
   const qs = new URLSearchParams();
 
   Object.entries(params).forEach(([key, value]) => {
-    if (value !== undefined && value !== null && value !== "") {
+    if (value !== "" && value !== undefined && value !== null) {
       qs.set(key, value);
     }
   });
@@ -57,7 +57,7 @@ export async function fetchQuery(id) {
   return request(BASE_QUERIES, `/${id}`);
 }
 
-// POST /api/queries   (FIXED: removed /submit)
+// POST /api/queries
 export async function createQuery(body) {
   return request(BASE_QUERIES, "", {
     method: "POST",
@@ -65,7 +65,15 @@ export async function createQuery(body) {
   });
 }
 
-// PATCH /api/queries/:id/status  (FIXED: PUT → PATCH)
+// PATCH /api/queries/:id
+export async function updateQuery(id, body) {
+  return request(BASE_QUERIES, `/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(body),
+  });
+}
+
+// PATCH /api/queries/:id/status
 export async function updateQueryStatus(id, body) {
   return request(BASE_QUERIES, `/${id}/status`, {
     method: "PATCH",
@@ -78,14 +86,4 @@ export async function deleteQuery(id) {
   return request(BASE_QUERIES, `/${id}`, {
     method: "DELETE",
   });
-}
-
-// ===============================
-// Analytics APIs
-// ===============================
-
-// GET /api/analytics/summary
-export async function analyticsSummary(params = {}) {
-  const path = buildQueryPath("/summary", params);
-  return request(BASE_ANALYTICS, path);
 }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { fetchQuery, updateQueryStatus } from '../lib/api'
+import { fetchQuery, updateQuery, updateQueryStatus } from '../lib/api'
 import { useSearch } from '../context/SearchContext'
 
 export default function QueryDetailsPage() {
@@ -30,29 +30,19 @@ export default function QueryDetailsPage() {
 
   useEffect(() => { load() }, [id, term, trigger])
 
-  // --------------------------
-  // 🔥 WORKING SAVE FUNCTION
-  // --------------------------
+  // SAVE FIXED — Uses PATCH
   async function save() {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/queries/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          message,
-          assignedTo: assignTo
-        }),
-      });
+      const updated = await updateQuery(id, {
+        message,
+        assignedTo: assignTo,
+      })
 
-      const updated = await res.json();
-      setDoc(updated);
-
-      alert("Saved Successfully!");
+      setDoc(updated)
+      alert("Saved Successfully!")
     } catch (err) {
-      console.error(err);
-      alert("Error saving data");
+      console.error(err)
+      alert("Error saving data")
     }
   }
 
