@@ -1,6 +1,6 @@
 // Backend base URLs
-const BASE_QUERIES = `${import.meta.env.VITE_API_URL}/queries`;
-const BASE_ANALYTICS = `${import.meta.env.VITE_API_URL}/analytics`;
+const BASE_QUERIES = `${import.meta.env.VITE_API_URL}/api/queries`;
+const BASE_ANALYTICS = `${import.meta.env.VITE_API_URL}/api/analytics`;
 
 // Universal request helper
 async function request(base, path = "", opts = {}) {
@@ -28,28 +28,12 @@ async function request(base, path = "", opts = {}) {
   return data;
 }
 
-// Build query params
-function buildQueryPath(basePath = "", params = {}) {
-  const qs = new URLSearchParams();
-
-  Object.entries(params).forEach(([key, value]) => {
-    if (value !== "" && value !== undefined && value !== null) {
-      qs.set(key, value);
-    }
-  });
-
-  const q = qs.toString();
-  return basePath + (q ? `?${q}` : "");
-}
-
-// ===============================
-// Query APIs
-// ===============================
+// ============= QUERIES =============
 
 // GET /api/queries
 export async function fetchQueries(params = {}) {
-  const path = buildQueryPath("", params);
-  return request(BASE_QUERIES, path);
+  const qs = new URLSearchParams(params).toString();
+  return request(BASE_QUERIES, qs ? `?${qs}` : "");
 }
 
 // GET /api/queries/:id
@@ -65,18 +49,26 @@ export async function createQuery(body) {
   });
 }
 
-// PATCH /api/queries/:id
+// PUT /api/queries/:id  (Full update)
 export async function updateQuery(id, body) {
   return request(BASE_QUERIES, `/${id}`, {
-    method: "PATCH",
+    method: "PUT",
     body: JSON.stringify(body),
   });
 }
 
-// PATCH /api/queries/:id/status
+// PUT /api/queries/:id/status
 export async function updateQueryStatus(id, body) {
   return request(BASE_QUERIES, `/${id}/status`, {
-    method: "PATCH",
+    method: "PUT",
+    body: JSON.stringify(body),
+  });
+}
+
+// PUT /api/queries/:id/assign
+export async function assignQuery(id, body) {
+  return request(BASE_QUERIES, `/${id}/assign`, {
+    method: "PUT",
     body: JSON.stringify(body),
   });
 }

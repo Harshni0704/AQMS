@@ -6,6 +6,7 @@ import InboxPage from './pages/InboxPage'
 import DashboardPage from './pages/DashboardPage'
 import RulesPage from './pages/RulesPage'
 import QueryDetailsPage from './pages/QueryDetailsPage'
+import AddQueryPage from './pages/AddQueryPage'
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
             <Route path="/inbox/:id" element={<QueryDetailsPage />} />
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/rules" element={<RulesPage />} />
+            <Route path="/add-query" element={<AddQueryPage />} />
           </Routes>
         </div>
       </div>
