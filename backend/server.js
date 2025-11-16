@@ -10,8 +10,19 @@ const errorHandler = require('./middlewares/errorHandler');
 
 const app = express();
 
+// ------------ FIXED CORS (IMPORTANT) ------------
+app.use(cors({
+  origin: [
+    "https://aqms-btw0zz3tj-harshnis-projects.vercel.app", // your Vercel app
+    "http://localhost:5173" // for local development
+  ],
+  methods: "GET,POST,PUT,DELETE,OPTIONS",
+  allowedHeaders: "Content-Type, Authorization",
+}));
+
+app.options('*', cors()); // handle preflight
+
 // Middleware
-app.use(cors());
 app.use(express.json());
 
 // Connect Database
