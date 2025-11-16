@@ -10,17 +10,19 @@ const errorHandler = require('./middlewares/errorHandler');
 
 const app = express();
 
-// ------------ FIXED CORS (IMPORTANT) ------------
+// ------------ FIXED CORS (FINAL VERSION) ------------
 app.use(cors({
   origin: [
-    "https://aqms-btw0zz3tj-harshnis-projects.vercel.app", // your Vercel app
-    "http://localhost:5173" // for local development
+    "https://aqms-nu.vercel.app",
+    "https://aqms-git-main-harshnis-projects.vercel.app",
+    "https://aqms-my3ztswho-harshnis-projects.vercel.app",
+    "http://localhost:5173"
   ],
   methods: "GET,POST,PUT,DELETE,OPTIONS",
   allowedHeaders: "Content-Type, Authorization",
 }));
 
-app.options('*', cors()); // handle preflight
+app.options("*", cors()); // Preflight
 
 // Middleware
 app.use(express.json());
@@ -29,13 +31,13 @@ app.use(express.json());
 connectDB();
 
 // Routes
-app.use('/api/queries', queryRoutes);
-app.use('/api/analytics', analyticsRoutes);
+app.use("/api/queries", queryRoutes);
+app.use("/api/analytics", analyticsRoutes);
 
-// Simple Health Check
-app.get('/api/health', (req, res) => res.json({ ok: true }));
+// Health Check
+app.get("/api/health", (req, res) => res.json({ ok: true }));
 
-// Error Handler (should be last)
+// Error Handler
 app.use(errorHandler);
 
 // Start Server
