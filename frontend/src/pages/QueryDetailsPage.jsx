@@ -30,8 +30,30 @@ export default function QueryDetailsPage() {
 
   useEffect(() => { load() }, [id, term, trigger])
 
+  // --------------------------
+  // 🔥 WORKING SAVE FUNCTION
+  // --------------------------
   async function save() {
-    alert('To persist message/assignee add a PUT /api/queries/:id endpoint in backend. Current backend supports status updates only.')
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/queries/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message,
+          assignedTo: assignTo
+        }),
+      });
+
+      const updated = await res.json();
+      setDoc(updated);
+
+      alert("Saved Successfully!");
+    } catch (err) {
+      console.error(err);
+      alert("Error saving data");
+    }
   }
 
   async function setStatus(s) {
@@ -66,9 +88,16 @@ export default function QueryDetailsPage() {
           </div>
 
           <div className="reply-editor">
-            <textarea value={message} onChange={e => setMessage(e.target.value)} />
+            <textarea 
+              value={message} 
+              onChange={e => setMessage(e.target.value)} 
+            />
             <div className="reply-actions">
-              <input placeholder="Assign to" value={assignTo} onChange={e => setAssignTo(e.target.value)} />
+              <input 
+                placeholder="Assign to" 
+                value={assignTo} 
+                onChange={e => setAssignTo(e.target.value)} 
+              />
               <button onClick={save} className="btn-primary">Save</button>
             </div>
           </div>
@@ -77,16 +106,32 @@ export default function QueryDetailsPage() {
         <aside className="detail-side">
           <div className="card">
             <h4>Details</h4>
-            <div className="meta-row"><strong>Query ID</strong><span>#{doc._id}</span></div>
-            <div className="meta-row"><strong>Status</strong>
-              <select value={doc.status} onChange={e => setStatus(e.target.value)}>
+            <div className="meta-row">
+              <strong>Query ID</strong>
+              <span>#{doc._id}</span>
+            </div>
+
+            <div className="meta-row">
+              <strong>Status</strong>
+              <select 
+                value={doc.status} 
+                onChange={e => setStatus(e.target.value)}
+              >
                 <option value="open">Open</option>
                 <option value="in_progress">In Progress</option>
                 <option value="resolved">Resolved</option>
               </select>
             </div>
-            <div className="meta-row"><strong>Assignee</strong><span>{doc.assignedTo || '—'}</span></div>
-            <div className="meta-row"><strong>Channel</strong><span>{doc.channel}</span></div>
+
+            <div className="meta-row">
+              <strong>Assignee</strong>
+              <span>{doc.assignedTo || '—'}</span>
+            </div>
+
+            <div className="meta-row">
+              <strong>Channel</strong>
+              <span>{doc.channel}</span>
+            </div>
           </div>
 
           <div className="card history">
