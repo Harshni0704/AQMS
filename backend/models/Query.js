@@ -5,19 +5,32 @@ const QuerySchema = new mongoose.Schema({
     type: String,
     required: true
   },
+
   email: {
     type: String,
     required: true
   },
+
   channel: {
     type: String,
-    enum: ['email', 'instagram', 'twitter', 'facebook', 'website', 'live_chat', 'whatsapp', 'linkedin'],
+    enum: [
+      'email',
+      'instagram',
+      'twitter',
+      'facebook',
+      'website',
+      'live_chat',
+      'whatsapp',
+      'linkedin'
+    ],
     required: true
   },
+
   message: {
     type: String,
     required: true
   },
+
   type: {
     type: String,
     enum: [
@@ -35,16 +48,20 @@ const QuerySchema = new mongoose.Schema({
     ],
     default: 'question'
   },
+
   priority: {
     type: String,
     enum: ['low', 'medium', 'high', 'urgent'],
     default: 'medium'
   },
+
   status: {
     type: String,
     enum: ['open', 'in_progress', 'resolved'],
     default: 'open'
   },
+
+  // 🔥 Assign feature (works 100% with your controllers)
   assignedTo: {
     type: String,
     default: null
