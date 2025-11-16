@@ -17,7 +17,7 @@ async function request(base, path = "", opts = {}) {
   try {
     data = text ? JSON.parse(text) : null;
   } catch (e) {
-    data = text;
+    data = text; // fallback for non-JSON responses
   }
 
   if (!res.ok) {
@@ -57,18 +57,18 @@ export async function fetchQuery(id) {
   return request(BASE_QUERIES, `/${id}`);
 }
 
-// POST /api/queries/submit
+// POST /api/queries   (FIXED: removed /submit)
 export async function createQuery(body) {
-  return request(BASE_QUERIES, "/submit", {
+  return request(BASE_QUERIES, "", {
     method: "POST",
     body: JSON.stringify(body),
   });
 }
 
-// PUT /api/queries/:id/status
+// PATCH /api/queries/:id/status  (FIXED: PUT → PATCH)
 export async function updateQueryStatus(id, body) {
   return request(BASE_QUERIES, `/${id}/status`, {
-    method: "PUT",
+    method: "PATCH",
     body: JSON.stringify(body),
   });
 }
